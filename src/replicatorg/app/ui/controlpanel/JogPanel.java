@@ -33,6 +33,7 @@ import replicatorg.drivers.Driver;
 import replicatorg.drivers.RetryException;
 import replicatorg.machine.model.AxisId;
 import replicatorg.util.Point5d;
+import replicatorg.drivers.PenPlotter;
 
 public class JogPanel extends JPanel implements ActionListener, MouseListener
 {
@@ -52,6 +53,9 @@ public class JogPanel extends JPanel implements ActionListener, MouseListener
 
 	protected MachineController machine;
 	protected Driver driver;
+	
+	protected PenControl penControl = null;
+
 
 	public class JogButton extends JButton {
 		public JogButton(String root, String tooltip) {
@@ -63,9 +67,11 @@ public class JogPanel extends JPanel implements ActionListener, MouseListener
 				setRolloverEnabled(true);
 			}
 			BufferedImage downImg = Base.getImage("images/"+root+"Down.png",this);
-			if (downImg == null) { downImg = overImg; }
-			if (downImg != null) {
+			if (downImg == null) { downImg = overImg; 
+			}
+			if (downImg != null) { 
 				setSelectedIcon(new ImageIcon(downImg));
+				setRolloverSelectedIcon(new ImageIcon(downImg));
 			}
 			Dimension imgSize = new Dimension(img.getWidth(null),img.getHeight(null));
 			setSize(imgSize);
@@ -240,6 +246,87 @@ public class JogPanel extends JPanel implements ActionListener, MouseListener
 		return panel;
 	}
 	
+	
+
+	private class PenControl implements ActionListener, FocusListener, ChangeListener {
+		final JTextField fieldUp, fieldDown;
+
+		private PenControl(String display, JPanel parent) {;			
+			JButton penUpButton = createJogButton("jog/pen+", "Jog Pen Up", "UP");
+			JButton penDownButton = createJogButton("jog/pen-", "Jog Pen Down", "DN");
+			JPanel penPanel = new JPanel(new MigLayout("flowx"));
+			penPanel.add(penUpButton,"growx,growy");
+			fieldUp = new JTextField();
+			fieldUp.setMinimumSize(new Dimension(75, 22));
+			fieldUp.setEnabled(true);
+			fieldUp.setText(Base.preferences.get(getPrefNameUp(),"40")); 	
+			fieldUp.addFocusListener(new FocusListener() {
+                                         public void focusLost(java.awt.event.FocusEvent e) {
+                                         	 double val = Double.parseDouble(fieldUp.getText());
+			                         Base.preferences.putDouble(getPrefNameUp(), val); } 
+			                public void focusGained(FocusEvent e) { }     });
+			fieldUp.addActionListener(new ActionListener() {
+                                         public void actionPerformed(ActionEvent e) {
+                                         	 double val = Double.parseDouble(fieldUp.getText());
+			                         Base.preferences.putDouble(getPrefNameUp(), val); }  });
+			penPanel.add(fieldUp,"growx");
+			penPanel.add(new JLabel("Up Angle"),"wrap");
+			penPanel.add(penDownButton);
+
+			fieldDown = new JTextField();
+			fieldDown.setMinimumSize(new Dimension(75, 22));
+			fieldDown.setMaximumSize(new Dimension(75, 22));
+			fieldDown.setEnabled(true);
+			fieldDown.setText(Base.preferences.get(getPrefNameDown(),"30"));
+			fieldDown.addFocusListener(new FocusListener() {
+                                         public void focusLost(java.awt.event.FocusEvent e) {
+                                         	 double val = Double.parseDouble(fieldDown.getText());
+			                         Base.preferences.putDouble(getPrefNameDown(), val); }
+			                 public void focusGained(FocusEvent e) { } });
+			fieldDown.addActionListener(new ActionListener() {
+                                         public void actionPerformed(ActionEvent e) {
+                                         	 double val = Double.parseDouble(fieldDown.getText());
+			                         Base.preferences.putDouble(getPrefNameDown(), val); }  });
+			penPanel.add(fieldDown);
+			penPanel.add(new JLabel("Down Angle"));
+		        penPanel.setBorder(BorderFactory.createTitledBorder(display));
+			parent.add(penPanel,"spanx 2, growx, growy");
+
+		}
+
+		String getPrefNameUp() { 
+			return "pen.upangle.".toLowerCase();
+		}
+		String getPrefNameDown() { 
+			return "pen.downangle.".toLowerCase();
+		}
+
+		void updateFromField() { }
+		
+		public void actionPerformed(ActionEvent e) {
+			updateFromField();
+		}
+
+		public void focusGained(FocusEvent e) {
+		}
+
+		public void focusLost(FocusEvent e) {
+			updateFromField();
+		}
+
+		public void stateChanged(ChangeEvent e) {			
+		}
+		
+		public Double getUpAngle() {
+			return Double.parseDouble(fieldUp.getText());
+		}
+		
+		public Double getDownAngle() {
+			return Double.parseDouble(fieldDown.getText());
+		}
+	}
+
+	
 	public JogPanel(MachineController machine) {
 		feedrate = new Point5d();
 		this.machine = machine;
@@ -302,10 +389,8 @@ public class JogPanel extends JPanel implements ActionListener, MouseListener
 		add(jogButtonPanel);
 		add(buildPositionPanel(),"growx,wrap");
 		add(feedratePanel,"growx,spanx");
-
-		// add jog panel border and stuff.
-		setBorder(BorderFactory.createTitledBorder("Jog Controls"));
-	
+		penControl = new PenControl("Pen Control",feedratePanel);
+	     	setBorder(BorderFactory.createTitledBorder("Jog Controls"));     
 	}
 	
 
@@ -366,7 +451,19 @@ public class JogPanel extends JPanel implements ActionListener, MouseListener
 				JComboBox cb = (JComboBox) e.getSource();
 				String jogText = (String) cb.getSelectedItem();
 				setJogMode(jogText);
-			} else {
+			} 
+			
+			else if (s.equals("UP")) {
+                               if (driver instanceof PenPlotter) { System.out.println ("UP pen "+penControl.getUpAngle());
+			             ((PenPlotter)driver).setServoPos(0, penControl.getUpAngle());
+			       }
+			 }
+			 else if (s.equals("DN")) {
+                               if (driver instanceof PenPlotter) {  System.out.println ("DN pen "+penControl.getDownAngle());
+			             ((PenPlotter)driver).setServoPos(0, penControl.getDownAngle());
+			       };
+
+			 } else {
 				Base.logger.warning("Unknown Action Event: " + s);
 			}
 		} catch (RetryException e1) {
