@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="utf-8"?>
+<machines>
+<machine>
+		<name>mrkim 1X2</name>
+		<geometry type="cartesian">
+
+                        <axis id="x" length="126" maxfeedrate="1000" scale="105"/>
+			<axis id="y" length="2000" maxfeedrate="1000" scale="106"/>
+			<axis id="z" length="75" maxfeedrate="150" scale="283"/>
+		</geometry>
+		<tools>
+			<tool name="stepper extruder" type="extruder" material="pla" motor="true" floodcoolant="false" mistcoolant="false" fan="true" valve="false" collet="false" heater="true" motor_steps="5440"/>
+		</tools>
+		<clamps></clamps>
+		<driver name="sanguino3g">
+		  <rate>38400</rate>
+		</driver>
+		<warmup>
+		</warmup>
+		<cooldown>
+(Turn off steppers after a build.)
+M18
+		</cooldown>
+	</machine>
+
+
+</machines>
