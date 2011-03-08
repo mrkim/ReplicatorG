@@ -18,7 +18,7 @@
 		<warmup>
 		</warmup>
 		<cooldown>
-(Turn off steppers after a build. )
+(Turn off steppers after a build.)
 M18
 		</cooldown>
 	</machine>
