@@ -1,7 +1,7 @@
 <?xml version="1.1" encoding="utf-8"?>
 <machines>
 <machine>
-		<name>mrkim 1X2</name>
+		<name>mrkim 1X2 12inch</name>
 		<geometry type="cartesian">
 
                         <axis id="x" length="126" maxfeedrate="1000" scale="105"/>
@@ -18,7 +18,7 @@
 		<warmup>
 		</warmup>
 		<cooldown>
-(Turn off steppers after a build. )
+(Turn off steppers after a build.)
 M18
 		</cooldown>
 	</machine>
