@@ -163,7 +163,7 @@ public class MainWindow extends JFrame implements MRJAboutHandler, MRJQuitHandle
 	private static final long serialVersionUID = 4144538738677712284L;
 
 	static final String WINDOW_TITLE = "ReplicatorG" + " - "
-			+ Base.VERSION_NAME;
+			+ Base.VERSION_NAME + "  fw1";
 
 	final static String MODEL_TAB_KEY = "MODEL";
 	final static String GCODE_TAB_KEY = "GCODE";
@@ -899,6 +899,7 @@ public class MainWindow extends JFrame implements MRJAboutHandler, MRJQuitHandle
 			}
 		});
 		menu.add(controlPanelItem);
+		controlPanelItem.setEnabled(true); // fw  
 		
 		onboardParamsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1337,13 +1338,13 @@ public class MainWindow extends JFrame implements MRJAboutHandler, MRJQuitHandle
 		window.setVisible(true);
 	}
 
-	public void handleControlPanel() {
+	public void handleControlPanel() {  System.out.println ( "1 handle control panel/n"); // fw
 		if (machine == null) {
 			JOptionPane.showMessageDialog(
 					this,
 					"ReplicatorG can't connect to your machine.\nTry checking your settings and resetting your machine.",
 					"Can't find machine", JOptionPane.ERROR_MESSAGE);
-		} else {
+		} else { System.out.println ( "2 handle control panel/n");   // fw
 			ControlPanelWindow window = ControlPanelWindow.getControlPanel(machine);
 			if (window != null) {
 				window.pack();
@@ -1357,7 +1358,7 @@ public class MainWindow extends JFrame implements MRJAboutHandler, MRJQuitHandle
 		if (machine == null) {
 			// machine already disconnected
 		} else {
-			machine.disconnect();
+			 machine.disconnect();   // fw
 		}
 	}
 	
@@ -1761,7 +1762,9 @@ public class MainWindow extends JFrame implements MRJAboutHandler, MRJQuitHandle
 		}
 		
 		// enable the control panel menu item when the machine is ready
-		controlPanelItem.setEnabled(evt.getState().isReady());
+		 controlPanelItem.setEnabled(evt.getState().isReady());
+		//controlPanelItem.setEnabled(true);  // fw allow panel to open for debug 
+		
 		// enable the build menu item when the machine is ready and there is gcode in the editor
 		buildMenuItem.setEnabled(hasGcode && evt.getState().isReady());
 		onboardParamsItem.setVisible(showParams);

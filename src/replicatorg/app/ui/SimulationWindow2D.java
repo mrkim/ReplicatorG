@@ -522,7 +522,7 @@ public class SimulationWindow2D extends SimulationWindow implements
 			Color belowColor = new Color(0, 0, 255);
 
 			synchronized (points) {
-				List<Point3d> lastPoints = getLastPoints(1000);
+				List<Point3d> lastPoints = getLastPoints(60000);   //1000);
 				Point3d start;
 				Point3d end;
 

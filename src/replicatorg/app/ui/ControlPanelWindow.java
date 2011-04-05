@@ -118,7 +118,7 @@ public class ControlPanelWindow extends JFrame implements
 		machine.addMachineStateListener(this);
 		
 		// default behavior
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+	 	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		// no menu bar.
 		setJMenuBar(createMenuBar());
@@ -325,7 +325,7 @@ public class ControlPanelWindow extends JFrame implements
 		public void run() {
 			// we'll break on interrupts
 			try {
-				while (true) {
+				while (true) {   //System.out.println ("PollThread"); // fw 
 					driver.updateManualControl();
 					// driver.readTemperature();
 					Thread.sleep(700);  // update every .7 s
@@ -338,9 +338,9 @@ public class ControlPanelWindow extends JFrame implements
 	class UpdateThread extends Thread {
 		ControlPanelWindow window;
 
-		public UpdateThread(ControlPanelWindow w) {
+		public UpdateThread(ControlPanelWindow w) { 
 			super("Control Panel Update Thread");
-
+                                 //System.out.println ("update thread  control panel"); // fw 
 			window = w;
 		}
 
@@ -348,11 +348,11 @@ public class ControlPanelWindow extends JFrame implements
 			// we'll break on interrupts
 			try {
 				while (true) {
-					try {
+					try {  //System.out.println ("update thread  run:"); // fw 
 						window.updateStatus();
 					} catch (AssertionError ae) {
 						// probaby disconnected unexpectedly; close window.
-						window.dispose();
+						  window.dispose();
 						break;
 					}
 					Thread.sleep(1000);
@@ -373,7 +373,7 @@ public class ControlPanelWindow extends JFrame implements
 			if (pollThread != null) { pollThread.interrupt(); }
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					dispose();
+				    dispose();
 				}
 			});
 		}

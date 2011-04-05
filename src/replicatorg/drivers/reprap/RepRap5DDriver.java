@@ -41,6 +41,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import replicatorg.drivers.PenPlotter;
+
+
 import org.w3c.dom.Node;
 
 import replicatorg.app.Base;
@@ -55,7 +58,7 @@ import replicatorg.machine.model.AxisId;
 import replicatorg.machine.model.ToolModel;
 import replicatorg.util.Point5d;
 
-public class RepRap5DDriver extends SerialDriver implements SerialFifoEventListener, RealtimeControl 
+public class RepRap5DDriver extends SerialDriver implements SerialFifoEventListener, RealtimeControl, PenPlotter 
 {
 	private static Pattern gcodeCommentPattern = Pattern.compile("\\([^)]*\\)|;.*");
 	private static Pattern resendLinePattern = Pattern.compile("([0-9]+)");
@@ -949,6 +952,18 @@ public class RepRap5DDriver extends SerialDriver implements SerialFifoEventListe
 		sendCommand(_getToolCode() + "M5");
 
 		super.disableSpindle();
+	}
+	
+	/***************************************************************************
+	 * Servo interface functions
+	 * @throws RetryException 
+	 *  support only one servo for now (0)
+	 **************************************************************************/	
+	public void setServoPos(int index, double degree) throws RetryException { 
+		System.out.println("RepRap5DDriver:: setServoPos "+index+"  "+degree);
+
+	     sendCommand(_getToolCode() + "M300 S" + df.format(degree));
+	     //super.setServoPos(index, degree);
 	}
 
 	/***************************************************************************
